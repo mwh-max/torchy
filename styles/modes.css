@@ -1,0 +1,15 @@
+/* =============================
+   🎭 Mode Backgrounds
+============================= */
+
+.thermal {
+  background: #222 url("../thermal.jpg") center/cover no-repeat;
+}
+
+.blueprint {
+  background: #003366 url("../blueprint.png") center/cover no-repeat;
+}
+
+.foggy {
+  background: rgba(100, 100, 100, 0.8) url("../fog.png") center/cover no-repeat;
+}

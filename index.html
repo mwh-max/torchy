@@ -1,1 +1,37 @@
-<!-- Assume existing HTML structure is in place -->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Torchy AR Overlay</title>
+    <link rel="stylesheet" href="styles/styles.css" />
+  </head>
+  <body>
+    <!-- UI Controls -->
+    <div id="controls">
+      <button id="snapshot">📸 Snapshot</button>
+      <button id="toggleMode">🔁 Toggle Mode</button>
+      <button id="toggleTeammates">👥 Toggle Teammates</button>
+      <div id="markerCount">Markers: 0 / 5</div>
+      <div id="status">Mode: THERMAL</div>
+    </div>
+
+    <!-- AR Viewport -->
+    <div id="arView" class="thermal">
+      <!-- Teammate mockups -->
+      <div class="teammate-wrapper" style="top: 100px; left: 100px">
+        <div id="teammate1" class="teammate"></div>
+      </div>
+      <div class="teammate-wrapper" style="top: 200px; left: 200px">
+        <div id="teammate2" class="teammate"></div>
+      </div>
+    </div>
+
+    <!-- Audio -->
+    <audio id="markerSound" src="ping.mp3" preload="auto"></audio>
+    <audio id="fogAudio" src="fog.mp3" preload="auto" loop></audio>
+
+    <!-- Main Script -->
+    <script src="script.js"></script>
+  </body>
+</html>
