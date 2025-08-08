@@ -1,4 +1,17 @@
 import { els } from "./dom.js";
+import { els } from "./dom.js";
+import {
+  hazardMarkers,
+  maxMarkers,
+  MODES,
+  currentMode,
+  setMode,
+  addMarker,
+  removeMarker,
+  freeze,
+  clearFrozen,
+  isFrozen,
+} from "./state.js";
 
 // 📍 Marker System
 let hazardMarkers = [];
@@ -6,7 +19,7 @@ const maxMarkers = 5;
 
 // 🚩 Mode State
 const MODES = { THERMAL: "thermal", BLUEPRINT: "blueprint", FOG: "fog" };
-let currentMode = MODES.THERMAL;
+setMode(MODES.THERMAL);
 
 // 👥 Teammates
 const teammates = document.querySelectorAll(".teammate");
@@ -31,13 +44,13 @@ function placeHazard(x, y, type = "manual") {
   marker.style.left = `${x - 15}px`;
   marker.style.top = `${y - 15}px`;
   arView.appendChild(marker);
-  hazardMarkers.push(marker);
+  addMarker(marker);
   updateMarkerCount();
 
   marker.addEventListener("click", (e) => {
     e.stopPropagation();
     marker.remove();
-    hazardMarkers = hazardMarkers.filter((m) => m !== marker);
+    removeMarker(marker);
     updateMarkerCount();
   });
 
@@ -69,13 +82,13 @@ function handleFogAudio(mode) {
 // 🎮 Mode Toggle
 toggleBtn.addEventListener("click", () => {
   if (currentMode === MODES.THERMAL) {
-    currentMode = MODES.BLUEPRINT;
+    setMode(MODES.BLUEPRINT);
     arView.className = "blueprint";
   } else if (currentMode === MODES.BLUEPRINT) {
-    currentMode = MODES.FOG;
+    setMode(MODES.FOG);
     arView.className = "foggy";
   } else {
-    currentMode = MODES.THERMAL;
+    setMode(MODES.THERMAL);
     arView.className = "thermal";
   }
   updateStatus(`Mode: ${currentMode.toUpperCase()}`);
@@ -121,7 +134,7 @@ setInterval(() => {
 
 // 🔁 Teammate Movement + Hazard Reaction
 function moveTeammate(wrapper, teammate) {
-  if (frozenTeammates.has(teammate.id)) return;
+  if (isFrozen(teammate.id)) return;
 
   const deltaX = (Math.random() - 0.5) * 30;
   const deltaY = (Math.random() - 0.5) * 30;
@@ -140,10 +153,10 @@ function moveTeammate(wrapper, teammate) {
   if (isNearHazard(wrapper)) {
     updateStatus(`⚠️ ${teammate.id} frozen near hazard!`, "red");
     wrapper.classList.add("alert");
-    frozenTeammates.add(teammate.id);
+    freeze(teammate.id);
     setTimeout(() => {
       wrapper.classList.remove("alert");
-      frozenTeammates.delete(teammate.id);
+      clearFrozen(teammate.id);
       updateStatus(`✔️ ${teammate.id} recovered`, "lime");
     }, 3000);
   }
