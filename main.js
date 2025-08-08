@@ -1,12 +1,4 @@
-
-// 🌐 DOM Elements
-const snapshotBtn = document.getElementById("snapshot");
-const toggleBtn = document.getElementById("toggleMode");
-const statusDisplay = document.getElementById("status");
-const arView = document.getElementById("arView");
-const teammateBtn = document.getElementById("toggleTeammates");
-const markerSound = document.getElementById("markerSound");
-const fogAudio = document.getElementById("fogAudio");
+import { els } from "./dom.js";
 
 // 📍 Marker System
 let hazardMarkers = [];
@@ -22,8 +14,9 @@ let frozenTeammates = new Set();
 
 // 📈 Helpers
 function updateMarkerCount() {
-  document.getElementById("markerCount").textContent = 
-    `Markers: ${hazardMarkers.length} / ${maxMarkers}`;
+  document.getElementById(
+    "markerCount"
+  ).textContent = `Markers: ${hazardMarkers.length} / ${maxMarkers}`;
 }
 
 function updateStatus(msg, color = "#fff") {
@@ -44,7 +37,7 @@ function placeHazard(x, y, type = "manual") {
   marker.addEventListener("click", (e) => {
     e.stopPropagation();
     marker.remove();
-    hazardMarkers = hazardMarkers.filter(m => m !== marker);
+    hazardMarkers = hazardMarkers.filter((m) => m !== marker);
     updateMarkerCount();
   });
 
@@ -54,7 +47,7 @@ function placeHazard(x, y, type = "manual") {
 function isNearHazard(teammate) {
   const tx = teammate.offsetLeft + 15;
   const ty = teammate.offsetTop + 15;
-  return hazardMarkers.some(h => {
+  return hazardMarkers.some((h) => {
     const hx = h.offsetLeft + 15;
     const hy = h.offsetTop + 15;
     return Math.hypot(hx - tx, hy - ty) < 50;
@@ -91,7 +84,7 @@ toggleBtn.addEventListener("click", () => {
 
 // 📸 Snapshot
 snapshotBtn.addEventListener("click", () => {
-  html2canvas(arView).then(canvas => {
+  html2canvas(arView).then((canvas) => {
     const link = document.createElement("a");
     link.download = "ar_snapshot.png";
     link.href = canvas.toDataURL();
@@ -101,7 +94,7 @@ snapshotBtn.addEventListener("click", () => {
 
 // 👥 Toggle Teammates
 teammateBtn.addEventListener("click", () => {
-  teammates.forEach(t => t.classList.toggle("hidden"));
+  teammates.forEach((t) => t.classList.toggle("hidden"));
 });
 
 // 🧱 Click to Add Manual Hazard
@@ -117,7 +110,8 @@ arView.addEventListener("click", (e) => {
 
 // 🔁 Simulate Gas Detection
 setInterval(() => {
-  if (currentMode !== MODES.BLUEPRINT || hazardMarkers.length >= maxMarkers) return;
+  if (currentMode !== MODES.BLUEPRINT || hazardMarkers.length >= maxMarkers)
+    return;
   if (Math.random() < 0.5) {
     const x = Math.random() * arView.clientWidth;
     const y = Math.random() * arView.clientHeight;
@@ -131,8 +125,14 @@ function moveTeammate(wrapper, teammate) {
 
   const deltaX = (Math.random() - 0.5) * 30;
   const deltaY = (Math.random() - 0.5) * 30;
-  const newX = Math.min(arView.clientWidth - 60, Math.max(0, wrapper.offsetLeft + deltaX));
-  const newY = Math.min(arView.clientHeight - 60, Math.max(0, wrapper.offsetTop + deltaY));
+  const newX = Math.min(
+    arView.clientWidth - 60,
+    Math.max(0, wrapper.offsetLeft + deltaX)
+  );
+  const newY = Math.min(
+    arView.clientHeight - 60,
+    Math.max(0, wrapper.offsetTop + deltaY)
+  );
 
   wrapper.style.left = `${newX}px`;
   wrapper.style.top = `${newY}px`;
@@ -150,7 +150,7 @@ function moveTeammate(wrapper, teammate) {
 }
 
 setInterval(() => {
-  teammates.forEach(t => {
+  teammates.forEach((t) => {
     const wrapper = t.closest(".teammate-wrapper");
     moveTeammate(wrapper, t);
   });
