@@ -96,23 +96,6 @@ export function onArViewClick(e) {
   placeHazard(x, y);
 }
 
-// Example state shape assumption:
-// const teammates = [{ id: 't1', x: 10, y: 5 }, ...];
-// If yours stores position as {pos:{x,y}}, tweak the assignments accordingly.
-
-export function moveTeammate(id, target, maxStep = 0.5) {
-  const t = teammates.find((tm) => tm.id === id);
-  if (!t) return;
-
-  const next = moveTowards({ x: t.x, y: t.y }, target, maxStep);
-
-  t.x = next.x;
-  t.y = next.y;
-
-  // If you already have a render hook, call it here:
-  // renderTeammate(t);
-}
-
 // 🔁 Teammate movement + hazard reaction
 export function moveTeammate(wrapper, teammate) {
   if (!wrapper || isFrozen(teammate.id)) return; // Skip missing/frozen teammates
