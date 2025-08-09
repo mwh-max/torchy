@@ -25,6 +25,8 @@ import {
   playMarkerSound,
 } from "./view.js";
 
+import { wireEvents } from "./events.js";
+
 // 🔁 Simulate Gas Detection
 setInterval(() => {
   if (currentMode !== MODES.BLUEPRINT || hazardMarkers.length >= maxMarkers)
