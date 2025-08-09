@@ -1,5 +1,4 @@
 import { els } from "./dom.js";
-import { els } from "./dom.js";
 import {
   hazardMarkers,
   maxMarkers,
@@ -23,23 +22,6 @@ import {
   playMarkerSound,
 } from "./view.js";
 
-// 📍 Marker System
-let hazardMarkers = [];
-const maxMarkers = 5;
-
-// 🚩 Mode State
-const MODES = { THERMAL: "thermal", BLUEPRINT: "blueprint", FOG: "fog" };
-setMode(MODES.THERMAL);
-
-// 👥 Teammates
-const teammates = document.querySelectorAll(".teammate");
-let frozenTeammates = new Set();
-
-// 📈 Helpers
-updateMarkerCount(hazardMarkers.length, maxMarker);
-
-updateStatus(msg, (color = "#fff"));
-
 function placeHazard(x, y, type = "manual") {
   const marker = makeMarker(x, y, type === "gas");
   addMarker(marker);
@@ -55,9 +37,9 @@ function placeHazard(x, y, type = "manual") {
   playMarkerSound();
 }
 
-function isNearHazard(teammate) {
-  const tx = teammate.offsetLeft + 15;
-  const ty = teammate.offsetTop + 15;
+function isNearHazard(wrapper) {
+  const tx = wrapper.offsetLeft + 15;
+  const ty = wrapper.offsetTop + 15;
   return hazardMarkers.some((h) => {
     const hx = h.offsetLeft + 15;
     const hy = h.offsetTop + 15;
@@ -65,31 +47,23 @@ function isNearHazard(teammate) {
   });
 }
 
-function handleFogAudio(mode) {
-  if (!fogAudio) return;
-  if (mode === MODES.FOG) {
-    fogAudio.volume = 0.6;
-    fogAudio.loop = true;
-    fogAudio.play().catch(() => {});
-  } else {
-    fogAudio.pause();
-    fogAudio.currentTime = 0;
-  }
-}
-
 // 🎮 Mode Toggle
-toggleBtn.addEventListener("click", () => {
+els.toggleBtn.addEventListener("click", () => {
   if (currentMode === MODES.THERMAL) {
     setMode(MODES.BLUEPRINT);
-    setModeClass(currentMode);
+  } else if (currentMode === MODES.BLUEPRINT) {
+    setMode(MODES.FOG);
+  } else {
+    setMode(MODES.THERMAL);
   }
+  setModeClass(currentMode);
   updateStatus(`Mode: ${currentMode.toUpperCase()}`);
   handleFogAudio(currentMode === MODES.FOG);
 });
 
 // 📸 Snapshot
-snapshotBtn.addEventListener("click", () => {
-  html2canvas(arView).then((canvas) => {
+els.snapshotBtn.addEventListener("click", () => {
+  html2canvas(els.arView).then((canvas) => {
     const link = document.createElement("a");
     link.download = "ar_snapshot.png";
     link.href = canvas.toDataURL();
@@ -98,16 +72,16 @@ snapshotBtn.addEventListener("click", () => {
 });
 
 // 👥 Toggle Teammates
-teammateBtn.addEventListener("click", () => {
-  teammates.forEach((t) => t.classList.toggle("hidden"));
+els.teammateBtn.addEventListener("click", () => {
+  els.teammates.forEach((t) => t.classList.toggle("hidden"));
 });
 
 // 🧱 Click to Add Manual Hazard
-arView.addEventListener("click", (e) => {
+els.arView.addEventListener("click", (e) => {
   if (currentMode === MODES.FOG) return;
   if (hazardMarkers.length >= maxMarkers) return;
 
-  const rect = arView.getBoundingClientRect();
+  const rect = els.arView.getBoundingClientRect();
   const x = e.clientX - rect.left;
   const y = e.clientY - rect.top;
   placeHazard(x, y);
@@ -118,8 +92,8 @@ setInterval(() => {
   if (currentMode !== MODES.BLUEPRINT || hazardMarkers.length >= maxMarkers)
     return;
   if (Math.random() < 0.5) {
-    const x = Math.random() * arView.clientWidth;
-    const y = Math.random() * arView.clientHeight;
+    const x = Math.random() * els.arView.clientWidth;
+    const y = Math.random() * els.arView.clientHeight;
     placeHazard(x, y, "gas");
   }
 }, 6000);
@@ -131,11 +105,11 @@ function moveTeammate(wrapper, teammate) {
   const deltaX = (Math.random() - 0.5) * 30;
   const deltaY = (Math.random() - 0.5) * 30;
   const newX = Math.min(
-    arView.clientWidth - 60,
+    els.arView.clientWidth - 60,
     Math.max(0, wrapper.offsetLeft + deltaX)
   );
   const newY = Math.min(
-    arView.clientHeight - 60,
+    els.arView.clientHeight - 60,
     Math.max(0, wrapper.offsetTop + deltaY)
   );
 
@@ -155,8 +129,14 @@ function moveTeammate(wrapper, teammate) {
 }
 
 setInterval(() => {
-  teammates.forEach((t) => {
+  els.teammates.forEach((t) => {
     const wrapper = t.closest(".teammate-wrapper");
     moveTeammate(wrapper, t);
   });
 }, 2000);
+
+//Initial UI paint
+updateMarkerCount(hazardMarkers.length, maxMarkers);
+setModeClass(currentMode);
+updateStatus(`Mode: ${currentMode.toUpperCase()}`);
+handleFogAudio(currentMode === MODES.FOG);
