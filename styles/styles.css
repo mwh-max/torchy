@@ -24,3 +24,47 @@
   box-shadow: 0 0 10px orange; /* glowing effect */
   animation: pulse 2s infinite; /* keep your existing pulse */
 }
+
+/* Gas hazards: show a flame icon + pulsing ring */
+.hazard-marker.gas-auto {
+  background: transparent; /* hide the dot fill */
+  border: none;
+  position: absolute;
+  width: 30px;
+  height: 30px; /* adjust to taste */
+  display: grid;
+  place-items: center;
+}
+
+/* the icon itself */
+.hazard-marker.gas-auto::before {
+  content: "🔥"; /* swap to ⚠️ if you prefer */
+  font-size: 20px;
+  line-height: 1;
+}
+
+/* the pulse ring around the icon */
+.hazard-marker.gas-auto::after {
+  content: "";
+  position: absolute;
+  inset: -4px; /* ring extends slightly outside */
+  border-radius: 50%;
+  border: 2px solid orange;
+  opacity: 0.7;
+  animation: gas-ring 1.6s infinite;
+}
+
+@keyframes gas-ring {
+  0% {
+    transform: scale(0.9);
+    opacity: 0.8;
+  }
+  70% {
+    transform: scale(1.3);
+    opacity: 0.25;
+  }
+  100% {
+    transform: scale(1.45);
+    opacity: 0;
+  }
+}
