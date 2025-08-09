@@ -22,6 +22,8 @@ import {
   playMarkerSound,
 } from "./view.js";
 
+import { moveTowards } from "./utils.js";
+
 export function placeHazard(x, y, type = "manual") {
   const marker = makeMarker(x, y, type === "gas");
   addMarker(marker);
@@ -92,6 +94,23 @@ export function onArViewClick(e) {
   const x = e.clientX - rect.left; // Convert to AR view X
   const y = e.clientY - rect.top; // Convert to AR view Y
   placeHazard(x, y);
+}
+
+// Example state shape assumption:
+// const teammates = [{ id: 't1', x: 10, y: 5 }, ...];
+// If yours stores position as {pos:{x,y}}, tweak the assignments accordingly.
+
+export function moveTeammate(id, target, maxStep = 0.5) {
+  const t = teammates.find((tm) => tm.id === id);
+  if (!t) return;
+
+  const next = moveTowards({ x: t.x, y: t.y }, target, maxStep);
+
+  t.x = next.x;
+  t.y = next.y;
+
+  // If you already have a render hook, call it here:
+  // renderTeammate(t);
 }
 
 // 🔁 Teammate movement + hazard reaction
