@@ -19,5 +19,8 @@
 }
 
 .gas-auto {
-  animation: pulse 1s infinite;
+  background-color: yellow; /* base color */
+  border: 2px solid orange; /* outer edge */
+  box-shadow: 0 0 10px orange; /* glowing effect */
+  animation: pulse 2s infinite; /* keep your existing pulse */
 }
