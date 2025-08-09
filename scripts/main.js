@@ -1,6 +1,6 @@
 import { els } from "./dom.js";
 
-import { moveTeammate } from "./controller.js";
+import { moveTeammate, placeHazard } from "./controller.js";
 
 import {
   hazardMarkers,

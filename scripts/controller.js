@@ -22,8 +22,6 @@ import {
   playMarkerSound,
 } from "./view.js";
 
-import { moveTowards } from "./utils.js";
-
 export function placeHazard(x, y, type = "manual") {
   const marker = makeMarker(x, y, type === "gas");
   addMarker(marker);
