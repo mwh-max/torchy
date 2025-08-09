@@ -32,6 +32,10 @@ export function makeMarker(x, y, isGas = false) {
   const marker = document.createElement("div");
   marker.classList.add("hazard-marker");
   if (isGas) marker.classList.add("gas-auto");
+  if (isGas) {
+    marker.classList.add("gas-auto");
+    marker.style.animationDuration = "2s";
+  }
   marker.style.left = `${x - 15}px`;
   marker.style.top = `${y - 15}px`;
   els.arView.appendChild(marker);
