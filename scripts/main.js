@@ -41,23 +41,18 @@ updateMarkerCount(hazardMarkers.length, maxMarker);
 updateStatus(msg, (color = "#fff"));
 
 function placeHazard(x, y, type = "manual") {
-  const marker = document.createElement("div");
-  marker.classList.add("hazard-marker");
-  if (type === "gas") marker.classList.add("gas-auto");
-  marker.style.left = `${x - 15}px`;
-  marker.style.top = `${y - 15}px`;
-  arView.appendChild(marker);
+  const marker = makeMarker(x, y, type === "gas");
   addMarker(marker);
-  updateMarkerCount();
+  updateMarkerCount(hazardMarkers.length, maxMarkers);
 
   marker.addEventListener("click", (e) => {
     e.stopPropagation();
-    marker.remove();
+    removeMarkerEl(marker);
     removeMarker(marker);
-    updateMarkerCount();
+    updateMarkerCount(hazardMarkers.length, maxMarkers);
   });
 
-  if (markerSound) markerSound.play();
+  playMarkerSound();
 }
 
 function isNearHazard(teammate) {
@@ -86,16 +81,10 @@ function handleFogAudio(mode) {
 toggleBtn.addEventListener("click", () => {
   if (currentMode === MODES.THERMAL) {
     setMode(MODES.BLUEPRINT);
-    arView.className = "blueprint";
-  } else if (currentMode === MODES.BLUEPRINT) {
-    setMode(MODES.FOG);
-    arView.className = "foggy";
-  } else {
-    setMode(MODES.THERMAL);
-    arView.className = "thermal";
+    setModeClass(currentMode);
   }
   updateStatus(`Mode: ${currentMode.toUpperCase()}`);
-  handleFogAudio(currentMode);
+  handleFogAudio(currentMode === MODES.FOG);
 });
 
 // 📸 Snapshot
