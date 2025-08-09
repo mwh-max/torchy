@@ -10,11 +10,11 @@ import {
 
 export function wireEvents() {
   // one-time UI init
-  initController();
+  initController(); //paint counts, mode, audio
 
   // listeners
   els.snapshotBtn.addEventListener("click", snapshot);
   els.toggleBtn.addEventListener("click", toggleMode);
   els.teammateBtn.addEventListener("click", toggleTeammates);
-  els.arView.addEventListener("click", onArViewClick);
+  els.arView.addEventListener("click", onArViewClick); // manual markers
 }
