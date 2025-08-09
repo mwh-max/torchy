@@ -44,3 +44,5 @@ setInterval(() => {
     moveTeammate(wrapper, t);
   });
 }, 2000);
+
+wireEvents();
