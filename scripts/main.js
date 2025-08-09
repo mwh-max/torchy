@@ -1,4 +1,7 @@
 import { els } from "./dom.js";
+
+import { moveTeammate } from "./controller.js";
+
 import {
   hazardMarkers,
   maxMarkers,
