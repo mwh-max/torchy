@@ -38,22 +38,19 @@ export function placeHazard(x, y, type = "manual") {
 }
 
 function isNearHazard(wrapper) {
-  //1) Find the teammate's center point (x, y)
+  // Teammate center (x, y)
   const tx = wrapper.offsetLeft + wrapper.offsetWidth / 2;
   const ty = wrapper.offsetTop + wrapper.offsetHeight / 2;
-  //2) check all hazard markers
+
+  // Return true if any hazard marker is within 50px of the teammate’s center
   return hazardMarkers.some((h) => {
-    //2a) Find the marker's center point (x, y)
     const hx = h.offsetLeft + h.offsetWidth / 2;
     const hy = h.offsetTop + h.offsetHeight / 2;
-
-    //2B) Measure distance between teammate's center and marker center
-    //Math.hypot(dx, dy) = straight-line distance
     return Math.hypot(hx - tx, hy - ty) < 50;
   });
 }
 
-//Mode control
+// Mode control
 export function toggleMode() {
   const next =
     currentMode === MODES.THERMAL
@@ -62,10 +59,10 @@ export function toggleMode() {
       ? MODES.FOG
       : MODES.THERMAL;
 
-  setMode(next); //tells app what the new mode is
-  setModeClass(next); //changes look of the page
-  updateStatus(`Mode: ${next.toUpperCase()}`); //updates status text to all caps
-  handleFogAudio(next === MODES.FOG); //plays or stop fog sounds
+  setMode(next); // Update mode state
+  setModeClass(next); // Update DOM classes
+  updateStatus(`Mode: ${next.toUpperCase()}`); // Update status text
+  handleFogAudio(next === MODES.FOG); // Play/stop fog audio
 }
 
 // 📸 Snapshot
@@ -80,59 +77,61 @@ export function snapshot() {
     .catch(() => updateStatus("Snapshot failed", "red"));
 }
 
-// 👥 Toggle Teammates
+// 👥 Toggle teammates
 export function toggleTeammates() {
   els.teammates.forEach((t) => t.classList.toggle("hidden"));
 }
 
-// 🧱 Click to Add Manual Hazard
+// 🧱 Click to add manual hazard
 export function onArViewClick(e) {
-  if (currentMode === MODES.FOG) return; //1. If in fog mode, do nothing.
-  if (hazardMarkers.length >= maxMarkers) return; //2. If we've hit hazard limit, do nothing.
-  if (e.target.closest(".teammate")) return; //3. If clicking on a teammate, do nothing.
+  if (currentMode === MODES.FOG) return; // Ignore clicks in FOG mode
+  if (hazardMarkers.length >= maxMarkers) return; // Respect hazard limit
+  if (e.target.closest(".teammate")) return; // Don’t place on teammates
 
-  const rect = els.arView.getBoundingClientRect(); //4. Get AR View's position/size
-  const x = e.clientX - rect.left; //5. Mouse X position inside AR view
-  const y = e.clientY - rect.top; //6. Mouse Y position inside AR view
-  placeHazard(x, y); //7. Create hazard at that spot.
+  const rect = els.arView.getBoundingClientRect(); // AR view bounds in the window
+  const x = e.clientX - rect.left; // Convert to AR view X
+  const y = e.clientY - rect.top; // Convert to AR view Y
+  placeHazard(x, y);
 }
 
-// 🔁 Teammate Movement + Hazard Reaction
+// 🔁 Teammate movement + hazard reaction
 export function moveTeammate(wrapper, teammate) {
-  if (!wrapper || isFrozen(teammate.id)) return; // 1) bail if missing or already frozen
+  if (!wrapper || isFrozen(teammate.id)) return; // Skip missing/frozen teammates
 
-  const deltaX = (Math.random() - 0.5) * 30; //2) pick a small random step
+  // Small random step
+  const deltaX = (Math.random() - 0.5) * 30;
   const deltaY = (Math.random() - 0.5) * 30;
 
-  const maxX = els.arView.clientWidth - wrapper.offsetWidth; // 3) right/bottom limits
+  // Keep movement within AR view bounds
+  const maxX = els.arView.clientWidth - wrapper.offsetWidth;
   const maxY = els.arView.clientHeight - wrapper.offsetHeight;
 
-  // 4) current position + step, then clamp into [0 ... max]
+  // Apply step and clamp into [0 .. max]
   const newX = Math.min(maxX, Math.max(0, wrapper.offsetLeft + deltaX));
   const newY = Math.min(maxY, Math.max(0, wrapper.offsetTop + deltaY));
 
-  wrapper.style.left = `${newX}px`; // 5) move the element
+  // Move element
+  wrapper.style.left = `${newX}px`;
   wrapper.style.top = `${newY}px`;
 
+  // Freeze if near a hazard; attempt recovery after 3s
   if (isNearHazard(wrapper)) {
-    // 6) if close to a hazard
     updateStatus(`⚠️ ${teammate.id} frozen near hazard!`, "red");
-    wrapper.classList.add("alert"); // ... turn it red
-    freeze(teammate.id); /// ... mark as frozen (no more moves)
+    wrapper.classList.add("alert");
+    freeze(teammate.id);
+
     setTimeout(() => {
-      // 7) after 3s, try to recover
-      // optional safety: only unfreeze if they’re actually clear now
+      // Only recover if no longer near a hazard
       if (!isNearHazard(wrapper)) {
-        // only if it's now clear
         wrapper.classList.remove("alert");
-        clearFrozen(teammate.id); // allow mvoement again
+        clearFrozen(teammate.id);
         updateStatus(`✔️ ${teammate.id} recovered`, "lime");
       }
     }, 3000);
   }
 }
 
-//Initial UI paint
+// Initial UI paint
 export function initController() {
   updateMarkerCount(hazardMarkers.length, maxMarkers);
   setModeClass(currentMode);
