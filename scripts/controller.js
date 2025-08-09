@@ -37,16 +37,10 @@ export function placeHazard(x, y, type = "manual") {
   playMarkerSound();
 }
 
-function center(el) {
-  return [
-    el.offsetLeft + el.offsetWidth / 2,
-    el.offsetTop + el.offsetHeight / 2,
-  ];
-}
-
 function isNearHazard(wrapper) {
   const tx = wrapper.offsetLeft + wrapper.offsetWidth / 2;
   const ty = wrapper.offsetTop + wrapper.offsetHeight / 2;
+
   return hazardMarkers.some((h) => {
     const hx = h.offsetLeft + h.offsetWidth / 2;
     const hy = h.offsetTop + h.offsetHeight / 2;
